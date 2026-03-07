@@ -8,8 +8,7 @@ venv/
 outputs/*
 !outputs/.gitkeep
 
-data/*
-!data/.gitkeep
+data/.gitkeep
 
 *.log
 *.tmp
