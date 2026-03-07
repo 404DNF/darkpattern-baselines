@@ -1,0 +1,12 @@
+numpy==2.0.2
+pandas==2.2.3
+scikit-learn==1.5.2
+lightgbm==4.5.0
+torch==2.6.0
+torchvision==0.21.0
+torchaudio==2.6.0
+transformers==4.56.2
+datasets==2.21.0
+accelerate==1.13.0
+evaluate==0.4.2
+safetensors==0.4.5
