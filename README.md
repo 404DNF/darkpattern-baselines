@@ -1,200 +1,110 @@
-# Dark Pattern Detection Baselines
-This repository provides baseline models for dark pattern detection using 5-fold Stratified Cross-Validation.
+# Dark Pattern Classification Experiments
 
-Two types of approaches are included:
-	•	Classical NLP models (Bag-of-Words features)
-	•	Transformer-based pretrained language models (PLMs)
+This repository runs three experiments in sequence with 5-fold Stratified Cross-Validation.
 
-The goal is to provide reproducible baseline results for binary dark pattern classification.
+## Experiment Structure
 
-⸻
+1. **Binary Classification**
+   - Task: NDP vs DP
+   - Target: `label`
+   - Models:
+     - Classical NLP: Logistic Regression, SVM, Random Forest, LightGBM
+     - PLMs: BERT / RoBERTa / ALBERT / XLNet
 
-## Models
+2. **Predicate Classification**
+   - Task: fine-grained multi-class classification
+   - Target: `predicate_id`
+   - Includes:
+     - Accuracy
+     - Macro-F1
+     - Weighted-F1
+     - Derived-type metrics from predicate predictions
 
-### Classical NLP (BoW)
+3. **Type Classification**
+   - Task: coarse-grained multi-class classification
+   - Target: `type_id`
 
-Text is converted to bag-of-words features (1-2 grams) and used with the following classifiers:
-	•	Logistic Regression
-	•	SVM (RBF kernel)
-	•	Random Forest
-	•	LightGBM
+---
 
+## Required CSV Columns
 
-### Transformer PLMs
+The input CSV must contain:
 
-Each model is fine-tuned with 5-fold CV using HuggingFace Trainer.
+- `String` or `text`
+- `label`
+- `predicate`
+- `type` or `Type`
 
-Supported models:
-	•	BERT-base / BERT-large
-	•	RoBERTa-base / RoBERTa-large
-	•	ALBERT-base / ALBERT-large
-	•	XLNet-base / XLNet-large
+`String` is automatically renamed to `text`.
 
-⸻
-
-## Expected Input CSV Format
-
-The CSV file must contain:
-	•	String or text → input text
-	•	label → binary label (0 / 1)
-
-Example:
-
-String	label
-This site is misleading.	1
-This is a normal interface.	0
-
-If a column named String exists, it is automatically renamed to text.
-
-⸻
+---
 
 ## Recommended Environment
 
 Tested environment:
-	•	Python 3.10.13
-	•	torch 2.6.0
-	•	transformers 4.56.2
-	•	accelerate 1.13.0
-	•	scikit-learn 1.5.2
-	•	lightgbm 4.5.0
 
-Operating systems tested:
-	•	macOS
-	•	Linux
+- Python `3.10.13`
+- torch `2.6.0`
+- transformers `4.56.2`
+- accelerate `1.13.0`
+- datasets `2.21.0`
+- scikit-learn `1.5.2`
+- lightgbm `4.5.0`
+- pandas `2.2.3`
+- numpy `2.0.2`
+- safetensors `0.4.5`
 
-GPU is optional.
-The code automatically falls back to CPU if CUDA is not available.
+### macOS only
 
-### macOS Additional Setup
+LightGBM requires OpenMP runtime:
 
-LightGBM requires OpenMP runtime on macOS.
-
-Install it with:
-
+```bash
 brew install libomp
+```
 
-Without this step LightGBM may fail with:
+## install
 
-Library not loaded: libomp.dylib
-
-
-⸻
-
-## Installation
-
-Clone the repository and create a virtual environment.
-
+```bash
 git clone https://github.com/your-repo/darkpattern-baselines.git
 cd darkpattern-baselines
 
-Create environment:
-
 python -m venv venv
 source venv/bin/activate
-
-Install dependencies:
-
 pip install -r requirements.txt
+```
 
+### Run
 
-⸻
-
-Run
-
-Place your dataset inside the data/ directory.
-
-Example:
-
-data/contextual_total.csv
-
-Run the experiment:
-
+```bash
 python main.py --csv_path ./data/contextual_total.csv --output_dir ./outputs
+```
 
-
-⸻
-
-## Output Files
-
-Results are automatically saved in the outputs/ directory.
-
-Generated files:
-
+## Output Structure
+1 ) Binary Classification
+```bash
 outputs/
- ├── classical_5fold.csv
- ├── plm_5fold.csv
- ├── darkpattern_baselines_5fold.csv
- └── plm_cv/
+├── classical_5fold.csv
+├── plm_5fold.csv
+├── darkpattern_baselines_5fold.csv
+└── plm_cv/
+    └── plm_results_partial.csv
+```
+2 ) Predicate + 3) Type Classification
+```bash
+outputs/hierarchical/
+├── hier_plm_results_partial.csv
+├── hier_plm_results_final.csv
+└── hier_plm_classwise_long.csv
+```
+In hier_plm_results_final.csv:
+	•	task == "predicate" → Predicate classification results
+	•	task == "type" → Type classification results
 
-Descriptions:
-
-File	Description
-classical_5fold.csv	Classical NLP baseline results
-plm_5fold.csv	Transformer model results
-darkpattern_baselines_5fold.csv	Combined result table
-plm_cv/	Intermediate results during PLM training
-
-
-⸻
-
-### Cross-Validation Protocol
-
-All experiments use:
-	•	5-fold Stratified Cross-Validation
-	•	Binary classification
-	•	Evaluation metrics:
-
-Metric
-Accuracy
-Precision
-Recall
-F1
-ROC-AUC
-
-Mean and standard deviation across folds are reported.
-
-⸻
-
-### Notes
-
-First run may download models
-
-Transformer models are downloaded from HuggingFace:
-
-huggingface.co
-
-This happens automatically on the first run.
-
-LightGBM fallback
-
-If LightGBM cannot be loaded due to system dependencies, the script will skip LightGBM and continue running other models.
-
-⸻
-
-Project Structure
-
-darkpattern-baselines/
-├── main.py
-├── requirements.txt
-├── README.md
-├── src/
-│   ├── classical_models.py
-│   ├── plm_models.py
-│   ├── metrics.py
-│   ├── data_utils.py
-│   └── utils.py
-├── data/
-└── outputs/
-
-
-⸻
-
-Reproducibility
-
-To reproduce the experiments:
-	1.	Install the dependencies
-	2.	Prepare the dataset
-	3.	Run main.py
-
-All results will be generated automatically.
-
+## Notes
+All experiments use 5-fold Stratified Cross-Validation.
+The script runs in this order:
+1. Binary classification
+2. Predicate classification
+3. Type classification
+- Transformer checkpoints are downloaded from Hugging Face on first run.
+- Large PLMs may exceed local GPU / MPS memory. In that case, use a GPU environment such as Colab.
