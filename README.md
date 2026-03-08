@@ -97,8 +97,8 @@ outputs/hierarchical/
 └── hier_plm_classwise_long.csv
 ```
 In hier_plm_results_final.csv:
-	•	task == "predicate" → Predicate classification results
-	•	task == "type" → Type classification results
+- task == "predicate" → Predicate classification results
+- task == "type" → Type classification results
 
 ## Notes
 All experiments use 5-fold Stratified Cross-Validation.
