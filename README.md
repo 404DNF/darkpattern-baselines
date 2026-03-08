@@ -65,7 +65,7 @@ brew install libomp
 ## install
 
 ```bash
-git clone https://github.com/your-repo/darkpattern-baselines.git
+git clone https://github.com/404DNF/darkpattern-baselines.git
 cd darkpattern-baselines
 
 python -m venv venv
